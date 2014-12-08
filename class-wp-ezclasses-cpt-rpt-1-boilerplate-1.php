@@ -28,7 +28,9 @@ if ( ! defined('ABSPATH') ) {
 }
 
 if ( ! class_exists('TODO-CLASS_NAME' ) ){
-  class TODO-CLASS_NAME extends Class_WP_ezClasses_CPT_RPT_1_Public_Exclude_From_Search_1-TODO {	
+  class TODO-CLASS_NAME extends Class_WP_ezClasses_CPT_RPT_1_Public_Exclude_From_Search_1-TODO {
+
+    protected $_str_post_type;  
 
 		protected function __construct() {	
 			parent::__construct();
@@ -42,26 +44,28 @@ if ( ! class_exists('TODO-CLASS_NAME' ) ){
 		 * Be sure to pass your post type name. All the other parms that matter are below. This gives you
 		 * a "last minute" opportunity to name the CPT.
 		 */
-		public function ez__construct( $str_cpt_name = '' ) {
+		public function ez__construct( $str_post_type = '' ) {
 		
-		  $arr_args = $this->this_cpt($str_cpt_name);
-		  parent::ez__construct($arr_args);
+		  $this->_str_post_type = $str_post_type;
+		
+		  add_action( 'init', array($this, 'cpt_do'), 50);
 		  
 		}
 		
-		protected function this_cpt( $str_cpt_name = '' ){
+		protected function this_cpt_do( $str_cpt_name = '' ){
 		
-		  if ( empty($str_cpt_name) ){
-		    $str_cpt_name = $this->this_cpt_name();
+		  $str_post_type = $this->_str_post_type;
+		  if ( empty($str_post_type) ){
+		    $str_post_type = $this->this_post_type();
 		  }
 		
 		  $arr_args = array(
 			  
-			'rpt_name'		=> $str_cpt_name,
+			'post_type'		=> $str_post_type,
 			'labels'		=> $this->this_post_type_labels(),
 			'supports'		=> $this->this_post_type_supports(),
 			'arguments'		=> $this->this_post_type_arguments(),
-			//	'capabilities'	=> $this->post_type_capabilities_settings(),
+			'capabilities'	=> $this->capabilities_settings(),
 			);
 		  return  $arr_args;
 		
@@ -70,9 +74,9 @@ if ( ! class_exists('TODO-CLASS_NAME' ) ){
 		/**
 		 * TODO or you can pass the name is an the arg of ::ez_new()
 		 */
-		protected this_cpt_name(){
+		protected this_post_type(){
 		
-		  return 'TODO_' . __CLASS__;
+		  return substr('TODO_' . __CLASS__, 0, 19);
 		
 		}
 		
@@ -145,9 +149,9 @@ if ( ! class_exists('TODO-CLASS_NAME' ) ){
 		 * that said, it's not impossible that you'll design your own parent class with a typical fixed set of caps
 		 * and then override as necessary.
 		 */
-		public function capabilities_settings($arr_args = array()){
+		public function capabilities_settings(){
 		
-			$arr_capabilities = $arr_args;
+			$arr_capabilities = = array();
 			
 			return $arr_capabilities;
 		}
